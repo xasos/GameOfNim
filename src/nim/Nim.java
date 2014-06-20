@@ -1,103 +1,83 @@
 package nim;
+
 import javax.swing.JOptionPane;
 import java.util.Random;
 
+public class Nim {
 
-public class Nim 
-{
-    int blocks;
-    int pturn;
-    String p1name;
-    String p2name;
-    int computerChoice;
-    Random rand = new Random();
-    int playerChoice;
-    
-    public Nim() 
-    {
-        pturn = rand.nextInt(3) + 1;       
+    private int totalBlocks;
+
+    public Nim() {
     }
-    
-    public void twoPlayer() 
-    {
-        p1name = JOptionPane.showInputDialog("What is player 1's name?");
-        p2name = JOptionPane.showInputDialog("What is player 2's name?");
-        
-        if (pturn == 1) 
-        {
-            JOptionPane.showMessageDialog(null, p1name + " goes first");
-        } 
-        
-        else 
-        {
-            JOptionPane.showMessageDialog(null, p2name + " goes first");
-        }
-    } 
-    
-    public void hard(int numblocks) 
-    {
-        blocks = numblocks;
-                
-        {
-            
+
+    private String getPlayerNameByTurn(int turn, Player playerOne, Player playerTwo) {
+        if (turn == 1) {
+            return playerOne.getName();
+        } else {
+            return playerTwo.getName();
         }
     }
-    
-    public void easy(int numblocks) 
-    {
-        blocks = numblocks;
+
+    public void twoPlayer(int blocks) {
+        String playerOneName = JOptionPane.showInputDialog("What is player 1's name?");
+        String playerTwoName = JOptionPane.showInputDialog("What is player 2's name?");
+
+        Player playerOne = new Player(playerOneName);
+        Player playerTwo = new Player(playerTwoName);
+        int turn = Player.getTurn();
+        while (totalBlocks > 0) {
+            turn = Player.getTurn();
+            if (turn == 1) {
+                totalBlocks = playerOne.doTurn(blocks);
+            } else {
+                totalBlocks = playerTwo.doTurn(blocks);
+            }
+            if (totalBlocks <= 0) {
+                String nameOfLoser = getPlayerNameByTurn(turn, playerOne, playerTwo);
+                JOptionPane.showMessageDialog(null, nameOfLoser + ", sorry to say but you lose! Better luck next time!");
+            }
+        }
+
+    }
+
+    public void hard(int numblocks) {
+        totalBlocks = numblocks;
         
-        p1name = JOptionPane.showInputDialog("What is your name?");
-        
-        if (pturn == 1) 
-        {
-            JOptionPane.showMessageDialog(null, p1name + " goes first");
-        } 
-        
-        else 
-        {
+        //TODO: create hard
+
+    }
+
+    private void displayNumberOfBlocks() {
+        JOptionPane.showMessageDialog(null, "There are now " + totalBlocks + " blocks");
+    }
+
+    public void easy(int numblocks) {
+        totalBlocks = numblocks;
+
+        String mainPlayerName = JOptionPane.showInputDialog("What is your name?");
+
+        Player mainPlayer = new Player(mainPlayerName);
+        Computer computer = new Computer();
+        if (Player.getTurn() == 1) {
+            JOptionPane.showMessageDialog(null, mainPlayer.getName() + " goes first");
+        } else {
             JOptionPane.showMessageDialog(null, "The computer goes first");
         }
-    
-        while (blocks>0) //Repeats loop until the number of blocks is zero
-        {
-            for (int i = 0; i < 10; i++) 
-            {
-                computerChoice = rand.nextInt(blocks/2) + 1;     
-                JOptionPane.showMessageDialog(null, "The computer chooses " + computerChoice + " blocks");
-                blocks-=computerChoice; 
-                JOptionPane.showMessageDialog(null, "There are now " + blocks + " blocks");
-                JOptionPane.showMessageDialog(null, "It is your turn.");
-                String input = JOptionPane.showInputDialog("How many blocks do you choose?");
-                playerChoice = Integer.parseInt(input);
-           
-                if (playerChoice <= (blocks/2)) 
-                {
-                   blocks-=playerChoice;
-                   JOptionPane.showMessageDialog(null, "There are now " + blocks + " blocks");
-                } 
-               
-                else 
-                {
-                    JOptionPane.showMessageDialog(null, "You must choose 1/2 or less of the blocks!\n"
-                            + "Please try again.");
-                }
-             
-            
-            
-            break;
-            }
-             
-        }
-    
-       
-        
-    }
-    
-    public void medium() 
-    {
-        
-    }
-  
-}
 
+        while (totalBlocks >= 0) {
+            int newTotalBlocks = computer.run(1, totalBlocks);
+            JOptionPane.showMessageDialog(null, "The computer chooses " + (totalBlocks - newTotalBlocks) + " blocks");
+            totalBlocks = newTotalBlocks;
+            displayNumberOfBlocks();
+            totalBlocks = mainPlayer.doTurn(totalBlocks);
+
+        }
+
+
+
+    }
+
+    public void medium() {
+        //TODO: create medium
+    }
+}
